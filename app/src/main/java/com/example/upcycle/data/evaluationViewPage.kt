@@ -31,7 +31,7 @@ import com.google.firebase.Timestamp
 
 class EvaluationViewModel : ViewModel() {
 
-    private val database = FirebaseDatabase.getInstance().getReference("Products")
+    private val database = FirebaseDatabase.getInstance().getReference("productsModel")
 
     private fun getImgurService(): ImgurService {
         val client = OkHttpClient.Builder()

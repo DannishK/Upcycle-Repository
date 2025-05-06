@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase
 //import com.google.firebase.database.core.Context
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class AuthViewModel: ViewModel() {
+class authViewModel: ViewModel() {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val _isLoading = MutableStateFlow(false)
     private val _errorMessage = MutableStateFlow<String?>(null)
@@ -29,7 +29,7 @@ class AuthViewModel: ViewModel() {
     sealed class LogoutState {
         object Idle : LogoutState()
         object Loading : LogoutState()
-        object Success : LogoutState()
+        data class Success(val message: String) : LogoutState()
         data class Error(val message: String) : LogoutState()
     }
     fun signup(firstname: String,email: String,password: String,
@@ -100,13 +100,18 @@ class AuthViewModel: ViewModel() {
                 }
             }
     }
-    fun logout() {
+    fun logout(navController: NavController? = null) {
         _logoutState.value = LogoutState.Loading
 
         viewModelScope.launch {
             try {
                 auth.signOut()
-                _logoutState.value = LogoutState.Success
+                _logoutState.value = LogoutState.Success(
+                    message = "Successfully logged out"
+                )
+                navController?.navigate(ROUTE_LOGIN) {
+                    popUpTo(0)
+                }
             } catch (e: Exception) {
                 _logoutState.value = LogoutState.Error(
                     message = e.message ?: "Unknown error occurred during logout"

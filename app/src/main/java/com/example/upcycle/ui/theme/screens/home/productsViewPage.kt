@@ -1,175 +1,161 @@
 package com.example.upcycle.ui.theme.screens.home
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.upcycle.data.EvaluationViewModel
 import com.example.upcycle.models.ProductsModel
-import com.example.upcycle.navigation.ROUTE_UPDATE_PRODUCT
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.example.upcycle.data.authViewModel
+import com.example.upcycle.navigation.ROUTE_LOGIN
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
-fun ViewProducts(navController: NavHostController) {
+fun ProductsViewPage(navController: NavController) {
+    val authViewModel: authViewModel = viewModel()
     val context = LocalContext.current
     val productRepository = EvaluationViewModel()
+    val selectedProduct = remember { mutableStateOf(ProductsModel()) }
+    val productList = remember { mutableStateListOf<ProductsModel>() }
+    val backgroundGradient = Brush.verticalGradient(
+        colors = listOf(Color(0xFFE8F5E9), Color(0xFFDCEDC8))
+    )
+    val iconColor = Color(0xFF2E7D32)
+    val textColor = Color(0xFF1B5E20)
+    val buttonColor = Color(0xFF7B61FF)
 
-    val selectedProduct = remember {
-        mutableStateOf(ProductsModel("", "", "", "", ""))
-    }
-    val productList = remember {
-        mutableStateListOf<ProductsModel>()
-    }
-
+    // Fetch products
     val products = productRepository.viewProducts(
-        selectedProduct, productList, context
+        product = selectedProduct,
+        productList = productList,
+        context = context
     )
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "All Products",
-            fontSize = 30.sp,
-            fontFamily = FontFamily.SansSerif,
-            color = Color.Black
-        )
-        Spacer(modifier = Modifier.height(20.dp))
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text(text = "SWAP UP") },
+            navigationIcon = {
+                IconButton(onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Home, contentDescription = "Home")
 
-        LazyColumn {
-            items(products) {
-                ProductItem(
-                    name = "it.name",
-                    price = "it.price",
-                    category = "it.category",
-                    location = "it.location",
-                    description = "it.description",
-                    imageUrl = "it.imageUrl",
-                    productId = "it.id",
-                    navController = navController,
-                    productRepository = productRepository
+                }
+            },
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
+                }
+                IconButton(onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+                }
+                IconButton(onClick = { authViewModel.logout() }) {
+                    Icon(imageVector = Icons.Filled.Close, contentDescription = "Logout")
+
+                }
+
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color(0xFF328EAD),
+                navigationIconContentColor = Color.White,
+                titleContentColor = Color.White,
+                actionIconContentColor = Color.White
+
+            )
+        )
+        Text(
+            text = "Explore our Refurbished Products",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.padding(8.dp),
+            contentPadding = PaddingValues(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(products) { product ->
+                ProductCard(product, navController)
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductCard(product: ProductsModel, navController: NavController) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .clickable {
+                navController.navigate("product_details/${product.id}")
+            },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column {
+            AsyncImage(
+                model = product.imageUrl.firstOrNull(),
+                contentDescription = product.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+            )
+
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(text = product.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = "Ksh ${product.price}", color = Color(0xFF388E3C), fontWeight = FontWeight.Bold)
+                Text(
+                    text = product.description.take(40) + "...",
+                    fontSize = 12.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
     }
-}
-
-@Composable
-fun ProductItem(
-    name: String,
-    price: String,
-    category: String,
-    location: String,
-    description: String,
-    imageUrl: String//List<String>,
-    productId: String,
-    navController: NavHostController,
-    productRepository: EvaluationViewModel
-) {
-    val context = LocalContext.current
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Card(
-            modifier = Modifier
-                .padding(10.dp)
-                .height(230.dp),
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(containerColor = Color.Gray)
-        ) {
-            Row {
-                Column {
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(150.dp)
-                            .padding(10.dp)
-                    )
-
-                    Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                        Button(
-                            onClick = {
-                                productRepository.deleteProduct(context, productId, navController)
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(Color.Red)
-                        ) {
-                            Text("REMOVE", color = Color.Black, fontWeight = FontWeight.Bold)
-                        }
-
-                        Button(
-                            onClick = {
-                                navController.navigate("$ROUTE_UPDATE_PRODUCT/$productId")
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(Color.Green)
-                        ) {
-                            Text("UPDATE", color = Color.Black, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 10.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    InfoLabel("Product Name", name)
-                    InfoLabel("Price", "Ksh $price")
-                    InfoLabel("Category", category)
-                    InfoLabel("Location", location)
-                    InfoLabel("Description", description)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun InfoLabel(label: String, value: String) {
-    Text(label, color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-    Text(value, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-}
-
-@Preview
-@Composable
-fun ViewProductsPreview() {
-    ViewProducts(rememberNavController())
 }

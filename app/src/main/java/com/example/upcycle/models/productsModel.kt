@@ -10,9 +10,6 @@ data class ProductsModel(
     val category: String = "",
     val imageUrl: String ="",//List<String> = listOf(),
     val sellerId: String = "",
-    val timestamp: Timestamp = Timestamp.now(),
+    val timestamp:Timestamp = Timestamp.now(),
     val location: String = ""
-) {
-
-   // constructor() : this("", "", 0.0, "", "", emptyList(), "", com.google.firebase.Timestamp.now(), "")
-}
+)

@@ -10,6 +10,6 @@ data class ProductsModel(
     val category: String = "",
     val imageUrl: String ="",//List<String> = listOf(),
     val sellerId: String = "",
-    val timestamp:Timestamp = Timestamp.now(),
+    val timestamp: Long = System.currentTimeMillis(),
     val location: String = ""
 )

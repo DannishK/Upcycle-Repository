@@ -1,4 +1,4 @@
-package com.example.upcycle.ui.theme.screens.home
+package com.example.upcycle.ui.theme.screens.evaluations
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -29,7 +29,6 @@ import com.example.upcycle.models.ProductsModel
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
@@ -43,9 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 import com.example.upcycle.data.authViewModel
-import com.example.upcycle.navigation.ROUTE_LOGIN
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("ViewModelConstructorInComposable")
@@ -101,7 +99,7 @@ fun ProductsViewPage(navController: NavController) {
             )
         )
         Text(
-            text = "Explore our Refurbished Products",
+            text = "Products will take 6hrs to be valid for evaluation",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = textColor,
@@ -112,7 +110,7 @@ fun ProductsViewPage(navController: NavController) {
         )
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+         columns = GridCells.Fixed(2),
             modifier = Modifier.padding(8.dp),
             contentPadding = PaddingValues(4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

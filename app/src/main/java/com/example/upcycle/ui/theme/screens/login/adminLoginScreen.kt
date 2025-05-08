@@ -1,5 +1,7 @@
 package com.example.upcycle.ui.theme.screens.login
 
+
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -46,11 +47,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.upcycle.data.authViewModel
 import com.example.upcycle.navigation.ROUTE_ADD_PRODUCT
-import com.example.upcycle.navigation.ROUTE_POST_PRODUCT
+import com.example.upcycle.navigation.ROUTE_LOGIN
 import com.example.upcycle.navigation.ROUTE_REGISTER
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun AdminLoginScreen(navController: NavController) {
     val authViewModel: authViewModel = viewModel()
 //    val DeepPurple = Color(0xFF5E35B1)
 //    val EmeraldGreen = Color(0xFF2E7D32)
@@ -71,15 +72,15 @@ fun LoginScreen(navController: NavController) {
     val iconColor = Color(0xFF2E7D32)
     val textColor = Color(0xFF1B5E20)
     val buttonColor = Color(0xFF7B61FF)
-   // val placeholderColor = Color(0xFF81C784)
+    // val placeholderColor = Color(0xFF81C784)
 
-   // var firstname by remember { mutableStateOf("") }
+    // var firstname by remember { mutableStateOf("") }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     //var password2 by remember { mutableStateOf("") }
     val context = LocalContext.current
-   // val passwordVisible by remember { mutableStateOf(false) }
+    // val passwordVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -95,47 +96,29 @@ fun LoginScreen(navController: NavController) {
             Box(
                 modifier = Modifier.fillMaxWidth()
             ){
-            Card (modifier = Modifier.padding(10.dp).align(Alignment.CenterStart),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(10.dp),
-                colors = CardDefaults.cardColors(Color(0xFF7B61FF)),) {
-
-                IconButton(onClick = { navController.navigate(ROUTE_POST_PRODUCT) }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Search"
-                    )
-                }
-
-
+//                Card (modifier = Modifier.padding(10.dp).align(Alignment.CenterStart),
+//                    shape = RoundedCornerShape(20.dp),
+//                    elevation = CardDefaults.cardElevation(10.dp),
+//                    colors = CardDefaults.cardColors(Color(0xFF7B61FF)),) {
+//
+//                    IconButton(onClick = { navController.navigate(ROUTE_ADD_PRODUCT) }) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = "Search"
+//                        )
+//                    }
+//                }
             }
-                Card(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .align(Alignment.CenterEnd),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(Color(0xFF7B61FF))
-                ) {
-                    IconButton(onClick = { navController.navigate(ROUTE_ADD_PRODUCT) }) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Admin Login",
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(140.dp))
+          //  Spacer(modifier = Modifier.height(140.dp))
 
             Text(
-                text = "Sign In",
+                text = "ADMIN",
                 fontSize = 50.sp,
                 fontWeight = FontWeight.Bold,
                 color = textColor
             )
             Text(
-                text = "Sign In to an account",
+                text = "Login to your admin account",
                 fontSize = 16.sp,
                 letterSpacing = 2.sp,
                 color = textColor.copy(alpha = 0.8f)
@@ -189,25 +172,25 @@ fun LoginScreen(navController: NavController) {
 
             // Sign Up Button
             Button(
-                onClick = { authViewModel.login(email,password, navController, context) },
+                onClick = { authViewModel.loginAdmin(email,password, navController, context) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
             ) {
-                Text("Sign In", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Log In", color = Color.White, fontWeight = FontWeight.Bold)
             }
 
             // Sign In Redirect
             Row {
-                Text("Don't have an account? ", color = textColor)
+                Text("Not an admin ? ", color = textColor)
                 Text(
-                    text = "Sign Up",
+                    text = "GO Back",
                     color = buttonColor,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
-                        navController.navigate(ROUTE_REGISTER)
+                        navController.navigate(ROUTE_LOGIN)
                     }
                 )
             }
@@ -217,6 +200,6 @@ fun LoginScreen(navController: NavController) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreenPreview() {
-    LoginScreen(rememberNavController())
+fun AdminLoginScreenPreview() {
+    AdminLoginScreen(rememberNavController())
 }

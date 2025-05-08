@@ -1,4 +1,6 @@
-package com.example.upcycle.ui.theme.screens.evaluations
+package com.example.upcycle.ui.theme.screens.products
+
+
 
 import android.net.Uri
 import android.widget.Toast
@@ -48,11 +50,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.text.style.TextAlign
-import com.example.upcycle.navigation.ROUTE_USER_HOME
+import com.example.upcycle.navigation.ROUTE_ADMIN_HOME
+
 
 
 @Composable
-fun UpdateProductScreen(navController: NavController, productId: String) {
+fun AdminUpdateProductScreen(navController: NavController, productId: String) {
     val context = LocalContext.current
     val imageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -64,9 +67,10 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
     var category by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var imageUrl by remember { mutableStateOf("") }
 
     val currentDataRef = FirebaseDatabase.getInstance()
-        .getReference("Product/$productId")
+        .getReference("userProducts/$productId")
 
     // Load current data
     DisposableEffect(Unit) {
@@ -79,6 +83,7 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
                     category = it.category
                     location = it.location
                     description = it.description
+                    imageUrl = it.imageUrl
                 }
             }
 
@@ -90,7 +95,7 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
         onDispose { currentDataRef.removeEventListener(listener) }
     }
 
-    val productViewModel: EvaluationViewModel = viewModel()
+    val adminProductViewModel: EvaluationViewModel = viewModel()
 
     Column(
         modifier = Modifier
@@ -121,7 +126,7 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
                 .size(200.dp)
         ) {
             AsyncImage(
-                model = imageUri.value ?: R.drawable.placeholder_image,
+                model = imageUri.value ?: imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -170,15 +175,14 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = { navController.navigate(ROUTE_USER_HOME) }) {
+            Button(onClick = { navController.navigate(ROUTE_ADMIN_HOME) }) {
                 Text("GO BACK")
             }
 
             Spacer(modifier = Modifier.width(20.dp))
 
             Button(onClick = {
-                productViewModel.updateProduct(
-
+                adminProductViewModel.AdminUpdateProduct(
                     context = context,
                     navController = navController,
                     name = name,
@@ -186,9 +190,8 @@ fun UpdateProductScreen(navController: NavController, productId: String) {
                     category = category,
                     location = location,
                     description = description,
-                    imageUrl = "",
-                    productId = "",
-
+                    imageUrl = imageUri.value?.toString() ?: imageUrl,
+                    productId = productId
                 )
             }) {
                 Text("UPDATE")

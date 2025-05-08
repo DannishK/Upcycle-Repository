@@ -6,12 +6,15 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.upcycle.models.UserModel
-import com.example.upcycle.navigation.ROUTE_HOME
+import com.example.upcycle.navigation.ROUTE_USER_HOME
 import com.example.upcycle.navigation.ROUTE_LOGIN
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.StateFlow
 import com.google.firebase.auth.ktx.auth
 import androidx.lifecycle.viewModelScope
+import com.example.upcycle.models.AdminModel
+import com.example.upcycle.navigation.ROUTE_ADMIN_HOME
+import com.example.upcycle.navigation.ROUTE_ADMIN_LOGIN
 import kotlinx.coroutines.launch
 import com.google.firebase.ktx.Firebase
 
@@ -92,7 +95,7 @@ class authViewModel: ViewModel() {
                 _isLoading.value=false
                 if (task.isSuccessful){
                     Toast.makeText(context, "User successfully logged in ", Toast.LENGTH_LONG).show()
-                    navController.navigate(ROUTE_HOME)
+                    navController.navigate(ROUTE_USER_HOME)
 
                 }else{
                     _errorMessage.value=task.exception?.message
@@ -100,6 +103,66 @@ class authViewModel: ViewModel() {
                 }
             }
     }
+//    fun signupAdmin(email: String, password: String,
+//                    navController: NavController, context: Context) {
+//
+//        if (email.isBlank() || password.isBlank()) {
+//            Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_LONG).show()
+//            return
+//        }
+//
+//        mAuth.createUserWithEmailAndPassword(email, password)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    val adminId = mAuth.currentUser?.uid ?: ""
+//                    val adminData = AdminModel(
+//                        email = email,
+//                        password = password,
+//                        adminId = adminId
+//                    )
+//                    saveAdminToDatabase(adminId, adminData, navController, context)
+//                } else {
+//                    Toast.makeText(context, "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+//                }
+//            }
+//    }
+//
+//    // Save Admin Data to Firebase Database
+//    private fun saveAdminToDatabase(adminId: String, adminData: AdminModel,
+//                                    navController: NavController, context: Context) {
+//
+//        val regRef = FirebaseDatabase.getInstance()
+//            .getReference("Admins/$adminId")
+//
+//        regRef.setValue(adminData).addOnCompleteListener { regTask ->
+//            if (regTask.isSuccessful) {
+//                Toast.makeText(context, "Admin Successfully Registered", Toast.LENGTH_LONG).show()
+//                navController.navigate(ROUTE_ADMIN_LOGIN)
+//            } else {
+//                Toast.makeText(context, "Database error: ${regTask.exception?.message}", Toast.LENGTH_LONG).show()
+//            }
+//        }
+//    }
+
+    // Admin Login Logic
+    fun loginAdmin(email: String, password: String, navController: NavController, context: Context) {
+
+        if (email.isBlank() || password.isBlank()) {
+            Toast.makeText(context, "Email and password required", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "Admin successfully logged in", Toast.LENGTH_LONG).show()
+                    navController.navigate(ROUTE_ADMIN_HOME)
+                } else {
+                    Toast.makeText(context, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+    }
+
     fun logout(navController: NavController? = null) {
         _logoutState.value = LogoutState.Loading
 

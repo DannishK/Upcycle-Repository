@@ -1,4 +1,6 @@
-package com.example.upcycle.ui.theme.screens.evaluations
+package com.example.upcycle.ui.theme.screens.products
+
+
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -51,7 +53,7 @@ import androidx.compose.foundation.layout.size
 import com.example.upcycle.navigation.ROUTE_USER_HOME
 
 @Composable
-fun AddProductScreen(navController: NavController) {
+fun PostProductScreen(navController: NavController) {
     val imageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { imageUri.value = it }
@@ -81,7 +83,7 @@ fun AddProductScreen(navController: NavController) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "ADD PRODUCT FOR EVALUATION",
+                text = "Post An Evaluated Product",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif
@@ -184,7 +186,7 @@ fun AddProductScreen(navController: NavController) {
                 modifier = Modifier.padding(10.dp),
                 onClick = {
                     imageUri.value?.let {
-                        productViewModel.uploadProductWithImage(
+                        productViewModel.AdminUploadProductWithImage(
 
                             uri = it,
                             context = context,
@@ -207,6 +209,6 @@ fun AddProductScreen(navController: NavController) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun AddProductScreenPreview() {
-    AddProductScreen(rememberNavController())
+fun PostProductScreenPreview() {
+    PostProductScreen(rememberNavController())
 }

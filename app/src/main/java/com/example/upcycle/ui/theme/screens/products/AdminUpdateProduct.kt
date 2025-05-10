@@ -83,7 +83,7 @@ fun AdminUpdateProductScreen(navController: NavController, productId: String) {
                     category = it.category
                     location = it.location
                     description = it.description
-                    imageUrl = it.imageUrl
+                    imageUrl = it.imageUrl.toString()
                 }
             }
 

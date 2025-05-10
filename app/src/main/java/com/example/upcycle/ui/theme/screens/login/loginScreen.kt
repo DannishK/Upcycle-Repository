@@ -27,7 +27,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -46,8 +46,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.upcycle.data.authViewModel
 import com.example.upcycle.navigation.ROUTE_ADD_PRODUCT
+import com.example.upcycle.navigation.ROUTE_ADMIN_LOGIN
 import com.example.upcycle.navigation.ROUTE_POST_PRODUCT
 import com.example.upcycle.navigation.ROUTE_REGISTER
+import com.example.upcycle.navigation.ROUTE_USER_HOME
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -95,20 +97,20 @@ fun LoginScreen(navController: NavController) {
             Box(
                 modifier = Modifier.fillMaxWidth()
             ){
-            Card (modifier = Modifier.padding(10.dp).align(Alignment.CenterStart),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(10.dp),
-                colors = CardDefaults.cardColors(Color(0xFF7B61FF)),) {
-
-                IconButton(onClick = { navController.navigate(ROUTE_POST_PRODUCT) }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Search"
-                    )
-                }
-
-
-            }
+//            Card (modifier = Modifier.padding(10.dp).align(Alignment.CenterStart),
+//                shape = RoundedCornerShape(20.dp),
+//                elevation = CardDefaults.cardElevation(10.dp),
+//                colors = CardDefaults.cardColors(Color(0xFF7B61FF)),) {
+//
+//                IconButton(onClick = { navController.navigate(ROUTE_USER_HOME) }) {
+//                    Icon(
+//                        imageVector = Icons.Default.ArrowBack,
+//                        contentDescription = "Back"
+//                    )
+//                }
+//
+//
+//            }
                 Card(
                     modifier = Modifier
                         .padding(10.dp)
@@ -117,7 +119,7 @@ fun LoginScreen(navController: NavController) {
                     elevation = CardDefaults.cardElevation(10.dp),
                     colors = CardDefaults.cardColors(Color(0xFF7B61FF))
                 ) {
-                    IconButton(onClick = { navController.navigate(ROUTE_ADD_PRODUCT) }) {
+                    IconButton(onClick = { navController.navigate(ROUTE_ADMIN_LOGIN) }) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Admin Login",

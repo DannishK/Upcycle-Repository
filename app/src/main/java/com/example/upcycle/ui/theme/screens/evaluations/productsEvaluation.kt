@@ -48,10 +48,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.size
+import com.example.upcycle.models.ProductsModel
 import com.example.upcycle.navigation.ROUTE_USER_HOME
+import com.example.upcycle.ui.theme.screens.home.AuthGuard
+import com.google.firebase.auth.FirebaseAuth
+import kotlin.collections.listOf
 
 @Composable
 fun AddProductScreen(navController: NavController) {
+    AuthGuard(navController) {
+    // Firebase instances
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userId = currentUser?.uid
+
+    // State for form fields
     val imageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { imageUri.value = it }
@@ -63,7 +73,6 @@ fun AddProductScreen(navController: NavController) {
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    val scrollState = rememberScrollState()
     val context = LocalContext.current
     val productViewModel: EvaluationViewModel = viewModel()
 
@@ -73,6 +82,7 @@ fun AddProductScreen(navController: NavController) {
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Header
         Box(
             modifier = Modifier
                 .background(Color.Green)
@@ -84,10 +94,12 @@ fun AddProductScreen(navController: NavController) {
                 text = "ADD PRODUCT FOR EVALUATION",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                fontFamily = FontFamily.SansSerif,
+                color = Color.White
             )
         }
 
+        // Image Upload Section
         Card(
             shape = CircleShape,
             modifier = Modifier
@@ -106,68 +118,16 @@ fun AddProductScreen(navController: NavController) {
 
         Text(text = "Upload product image")
 
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Product Name", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter product name") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
+        // Input Fields
+        CustomTextField(value = name, label = "Product Name") { name = it }
+        CustomTextField(value = price, label = "Price (Ksh)") { price = it }
+        CustomTextField(value = category, label = "Category") { category = it }
+        CustomTextField(value = location, label = "Location") { location = it }
+        CustomTextField(value = description, label = "Description", isMultiline = true) { description = it }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = price,
-            onValueChange = { price = it },
-            label = { Text("Price (Ksh)", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter product price") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = category,
-            onValueChange = { category = it },
-            label = { Text("Category", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter category") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = location,
-            onValueChange = { location = it },
-            label = { Text("Location", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter pickup/delivery location") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter product details") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 150.dp, max = 300.dp)
-                .verticalScroll(scrollState),
-            singleLine = false,
-            textStyle = TextStyle(color = Color.Black)
-        )
-
+        // Action Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -183,9 +143,13 @@ fun AddProductScreen(navController: NavController) {
             Button(
                 modifier = Modifier.padding(10.dp),
                 onClick = {
+                    if (userId == null) {
+                        Toast.makeText(context, "User not authenticated", Toast.LENGTH_LONG).show()
+                        return@Button
+                    }
+
                     imageUri.value?.let {
                         productViewModel.uploadProductWithImage(
-
                             uri = it,
                             context = context,
                             name = name,
@@ -203,10 +167,23 @@ fun AddProductScreen(navController: NavController) {
             }
         }
     }
+  }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun AddProductScreenPreview() {
-    AddProductScreen(rememberNavController())
+fun CustomTextField(value: String, label: String, isMultiline: Boolean = false, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { onValueChange(it) },
+        label = { Text(label, fontWeight = FontWeight.Bold) },
+        placeholder = { Text("Enter $label") },
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .heightIn(min = if (isMultiline) 150.dp else 56.dp),
+        textStyle = TextStyle(color = Color.Black),
+        singleLine = !isMultiline
+    )
 }
+

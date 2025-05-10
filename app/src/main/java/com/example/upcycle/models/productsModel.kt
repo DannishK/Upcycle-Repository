@@ -8,8 +8,10 @@ data class ProductsModel(
     val price: String = "",
     val description: String = "",
     val category: String = "",
-    val imageUrl: String ="",//List<String> = listOf(),
+    val imageUrl: String= "",//List<String> = listOf(),
     val sellerId: String = "",
     val timestamp: Long = System.currentTimeMillis(),
+    var userId: String="",
     val location: String = ""
+
 )

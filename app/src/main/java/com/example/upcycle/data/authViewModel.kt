@@ -182,4 +182,30 @@ class authViewModel: ViewModel() {
             }
         }
     }
+    fun adminlogout(navController: NavController? = null) {
+        _logoutState.value = LogoutState.Loading
+
+        viewModelScope.launch {
+            try {
+                // Sign out the admin
+                FirebaseAuth.getInstance().signOut()
+
+                // Clear the admin state
+                _logoutState.value = LogoutState.Success(
+                    message = "Successfully logged out"
+                )
+
+                // Navigate to the Admin Login screen
+                navController?.navigate(ROUTE_ADMIN_LOGIN) {
+                    // Clear backstack to prevent going back to protected screens
+                    popUpTo(0)
+                }
+            } catch (e: Exception) {
+                _logoutState.value = LogoutState.Error(
+                    message = e.message ?: "Unknown error occurred during logout"
+                )
+            }
+        }
+    }
+
 }

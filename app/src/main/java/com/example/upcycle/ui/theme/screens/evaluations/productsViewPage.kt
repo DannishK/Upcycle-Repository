@@ -43,86 +43,104 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.upcycle.data.authViewModel
+import com.example.upcycle.navigation.ROUTE_ADD_PRODUCT
+import com.example.upcycle.navigation.ROUTE_PRODUCT_DETAILS
+import com.example.upcycle.navigation.ROUTE_UPDATE_PRODUCT
+import com.example.upcycle.navigation.ROUTE_USER_PROFILE
+import com.example.upcycle.ui.theme.screens.home.AuthGuard
+import com.google.firebase.auth.FirebaseAuth
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun ProductsViewPage(navController: NavController) {
-    val authViewModel: authViewModel = viewModel()
-    val context = LocalContext.current
-    val productRepository = EvaluationViewModel()
-    val selectedProduct = remember { mutableStateOf(ProductsModel()) }
-    val productList = remember { mutableStateListOf<ProductsModel>() }
-    val backgroundGradient = Brush.verticalGradient(
-        colors = listOf(Color(0xFFE8F5E9), Color(0xFFDCEDC8))
-    )
-    val iconColor = Color(0xFF2E7D32)
-    val textColor = Color(0xFF1B5E20)
-    val buttonColor = Color(0xFF7B61FF)
+    AuthGuard(navController) {
+        val authViewModel: authViewModel = viewModel()
+        val context = LocalContext.current
+        val productRepository = EvaluationViewModel()
+        val selectedProduct = remember { mutableStateOf(ProductsModel()) }
+        val productList = remember { mutableStateListOf<ProductsModel>() }
+        val backgroundGradient = Brush.verticalGradient(
+            colors = listOf(Color(0xFFE8F5E9), Color(0xFFDCEDC8))
+        )
+        val iconColor = Color(0xFF2E7D32)
+        val textColor = Color(0xFF1B5E20)
 
-    // Fetch products
-    val products = productRepository.viewProducts(
-        product = selectedProduct,
-        productList = productList,
-        context = context
-    )
+        // Fetch the current user's ID
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text(text = "SWAP UP") },
-            navigationIcon = {
-                IconButton(onClick = {}) {
-                    Icon(imageVector = Icons.Filled.Home, contentDescription = "Home")
+        // Fetch products
+        val products = productRepository.viewProducts(
+            product = selectedProduct,
+            productList = productList,
+            context = context
+        ).filter { it.userId == userId } // Filter products by the current user's ID
 
-                }
-            },
-            actions = {
-                IconButton(onClick = {}) {
-                    Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
-                }
-                IconButton(onClick = {}) {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
-                }
-                IconButton(onClick = { authViewModel.logout() }) {
-                    Icon(imageVector = Icons.Filled.Close, contentDescription = "Logout")
-
-                }
-
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color(0xFF328EAD),
-                navigationIconContentColor = Color.White,
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.White
-
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopAppBar(
+                title = { Text(text = "SWAP UP") },
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Filled.Home, contentDescription = "Home")
+                    }
+                },
+                actions = {
+//                IconButton(onClick = {}) {
+//                    Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
+//                }
+                    IconButton(onClick = { navController.navigate(ROUTE_ADD_PRODUCT) }) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+                    }
+//                IconButton(onClick = { authViewModel.logout() }) {
+//                    Icon(imageVector = Icons.Filled.Close, contentDescription = "Logout")
+//                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF328EAD),
+                    navigationIconContentColor = Color.White,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
             )
-        )
-        Text(
-            text = "Products will take 6hrs to be valid for evaluation",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = textColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
 
-        LazyVerticalGrid(
-         columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(8.dp),
-            contentPadding = PaddingValues(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(products) { product ->
-                ProductCard(product, navController)
+            Text(
+                text = "Products will take 6hrs to be valid for evaluation",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = textColor,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+
+            Text(
+                text = "Click to Update",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = textColor,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.padding(8.dp),
+                contentPadding = PaddingValues(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(products) { product ->
+                    ProductCard(product, navController)
+                }
             }
         }
     }
 }
-
 @Composable
 fun ProductCard(product: ProductsModel, navController: NavController) {
     Card(
@@ -130,7 +148,8 @@ fun ProductCard(product: ProductsModel, navController: NavController) {
             .fillMaxWidth()
             .height(250.dp)
             .clickable {
-                navController.navigate("product_details/${product.id}")
+                // Navigate to the Update Screen with the product ID
+                navController.navigate("$ROUTE_UPDATE_PRODUCT/${product.id}")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -157,3 +176,4 @@ fun ProductCard(product: ProductsModel, navController: NavController) {
         }
     }
 }
+

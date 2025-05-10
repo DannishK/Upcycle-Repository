@@ -35,6 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,6 +48,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.upcycle.data.authViewModel
+import com.example.upcycle.navigation.ROUTE_ADMIN_PROFILE
+import com.example.upcycle.navigation.ROUTE_USER_PROFILE
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,9 +85,9 @@ fun AdminProductsViewPage(navController: NavController) {
                 }
             },
             actions = {
-//                IconButton(onClick = {}) {
-//                    Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
-//                }
+                IconButton(onClick = { navController.navigate(ROUTE_ADMIN_PROFILE) }) {
+                    Icon(imageVector = Icons.Filled.Person, contentDescription = "Account")
+                }
 //                IconButton(onClick = {}) {
 //                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
 //                }
@@ -103,7 +106,7 @@ fun AdminProductsViewPage(navController: NavController) {
             )
         )
         Text(
-            text = "Explore our Refurbished Products",
+            text = "As an admin make sure you log out",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = textColor,

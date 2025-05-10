@@ -3,13 +3,17 @@ import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.upcycle.models.ProductsModel
 import com.example.upcycle.navigation.ROUTE_ADMIN_HOME
+import com.example.upcycle.navigation.ROUTE_LOGIN
 import com.example.upcycle.navigation.ROUTE_USER_HOME
 import com.example.upcycle.network.ImgurService
 import com.google.firebase.database.DataSnapshot
@@ -27,6 +31,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 
 
@@ -63,72 +68,83 @@ class EvaluationViewModel : ViewModel() {
         }
     }
 // Users Upload,View and Delete
-    fun uploadProductWithImage(
-        uri: Uri,
-        context: Context,
-        name: String,
-        price: String,
-        category: String,
-        location: String,
-        description: String,
-        navController: NavController
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val file = getFileFromUri(context, uri)
-            if (file == null) {
-                showToast(context, "Failed to process image")
-                return@launch
-            }
+fun uploadProductWithImage(
+    uri: Uri,
+    context: Context,
+    name: String,
+    price: String,
+    category: String,
+    location: String,
+    description: String,
+    navController: NavController
+) {
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    if (currentUser == null) {
+        showToast(context, "User not logged in")
+        return
+    }
 
-            val imagePart = MultipartBody.Part.createFormData(
-                "image", file.name, file.asRequestBody("image/*".toMediaTypeOrNull())
+    val userId = currentUser.uid
+
+    viewModelScope.launch(Dispatchers.IO) {
+        val file = getFileFromUri(context, uri)
+        if (file == null) {
+            showToast(context, "Failed to process image")
+            return@launch
+        }
+
+        val imagePart = MultipartBody.Part.createFormData(
+            "image", file.name, file.asRequestBody("image/*".toMediaTypeOrNull())
+        )
+
+        try {
+            val response = getImgurService().uploadImage(
+                imagePart,
+                "Client-ID 9fc797293a51bed"
             )
 
-            try {
-                val response = getImgurService().uploadImage(
-                    imagePart,
-                    "Client-ID 9fc797293a51bed"
+            if (response.isSuccessful) {
+                val imageUrl = response.body()?.data?.link ?: ""
+                val productId = database.push().key ?: return@launch
+                val product = ProductsModel(
+                    id = productId,
+                    name = name,
+                    price = price,
+                    description = description,
+                    category = category,
+                    imageUrl = imageUrl,//listOf(imageUrl),
+                    timestamp = System.currentTimeMillis(),
+                    location = location,
+                    userId = userId // Store the User ID
                 )
 
-                if (response.isSuccessful) {
-                    val imageUrl = response.body()?.data?.link ?: ""
-                    val productId = database.push().key ?: return@launch
-                    val product = ProductsModel(
-                        id = productId,
-                        name = name,
-                        price = price,
-                        description = description,
-                        category = category,
-                        imageUrl = imageUrl,//listOf(imageUrl),
-                        timestamp = System.currentTimeMillis(),
-                        location = location
-                    )
-
-                    database.child(productId).setValue(product)
-                        .addOnSuccessListener {
-                            showToast(context, "Product saved successfully")
-                            navController.navigate(ROUTE_USER_HOME)
-                        }
-                        .addOnFailureListener {
-                            showToast(context, "Failed to save product")
-                        }
-
-                } else {
-                    showToast(context, "Upload failed: ${response.code()}")
-                }
-
-            } catch (e: Exception) {
-                showToast(context, "Upload error: ${e.localizedMessage}")
+                // Save to the "productsModel" node
+                database.child("productsModel").child(productId).setValue(product)
+                    .addOnSuccessListener {
+                        showToast(context, "Product saved successfully")
+                        navController.navigate(ROUTE_USER_HOME)
+                    }
+                    .addOnFailureListener {
+                        showToast(context, "Failed to save product")
+                    }
+            } else {
+                showToast(context, "Upload failed: ${response.code()}")
             }
+
+        } catch (e: Exception) {
+            showToast(context, "Upload error: ${e.localizedMessage}")
         }
     }
+}
+
+
 
     fun viewProducts(
         product: MutableState<ProductsModel>,
         productList: SnapshotStateList<ProductsModel>,
         context: Context
     ): SnapshotStateList<ProductsModel> {
-        database.addValueEventListener(object : ValueEventListener {
+        adminDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 productList.clear()
                 snapshot.children.mapNotNullTo(productList) {
@@ -155,28 +171,35 @@ class EvaluationViewModel : ViewModel() {
         location: String,
         description: String,
         imageUrl: String,
-        productId: String
+        productId: String,
+        userId: String
     ) {
+        val database = FirebaseDatabase.getInstance().getReference("productsModel")
+
+        // Create the updated product with the User ID included
         val updatedProduct = ProductsModel(
             id = productId,
             name = name,
             price = price,
-            description = description,
             category = category,
-            imageUrl = imageUrl, //listOf(imageUrl),
+            location = location,
+            description = description,
+            imageUrl = imageUrl,//listOf(imageUrl),
             timestamp = System.currentTimeMillis(),
-            location = location
+            userId = userId // Store the User ID
         )
+
+        // Update the product in the database
         database.child(productId).setValue(updatedProduct)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    showToast(context, "Product updated successfully")
-                    navController.navigate(ROUTE_USER_HOME)
-                } else {
-                    showToast(context, "Update failed")
-                }
+            .addOnSuccessListener {
+                Toast.makeText(context, "Product updated successfully", Toast.LENGTH_SHORT).show()
+                navController.navigate(ROUTE_USER_HOME)
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     fun deleteProduct(context: Context, productId: String, navController: NavController) {
         AlertDialog.Builder(context)
@@ -234,7 +257,7 @@ class EvaluationViewModel : ViewModel() {
                         price = price,
                         description = description,
                         category = category,
-                        imageUrl = imageUrl,
+                        imageUrl = imageUrl,//listOf(imageUrl),
                         timestamp = System.currentTimeMillis(),
                         location = location
                     )
@@ -262,22 +285,25 @@ class EvaluationViewModel : ViewModel() {
         product: MutableState<ProductsModel>,
         productList: SnapshotStateList<ProductsModel>,
         context: Context
-    ): SnapshotStateList<ProductsModel> {
-        adminDatabase.addValueEventListener(object : ValueEventListener {
+    ): List<ProductsModel> {
+        val database = FirebaseDatabase.getInstance().getReference("productsModel")
+
+        database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                productList.clear()
-                snapshot.children.mapNotNullTo(productList) {
-                    it.getValue(ProductsModel::class.java)
-                }
-                if (productList.isNotEmpty()) {
-                    product.value = productList.first()
+                productList.clear() // Clear the list to avoid duplication
+                for (childSnapshot in snapshot.children) {
+                    val fetchedProduct = childSnapshot.getValue(ProductsModel::class.java)
+                    fetchedProduct?.let {
+                        productList.add(it)
+                    }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                showToast(context, "Fetch failed: ${error.message}")
+                Toast.makeText(context, "Failed to load products: ${error.message}", Toast.LENGTH_LONG).show()
             }
         })
+
         return productList
     }
 
@@ -298,7 +324,7 @@ class EvaluationViewModel : ViewModel() {
             price = price,
             description = description,
             category = category,
-            imageUrl = imageUrl,
+            imageUrl = imageUrl,//listOf(imageUrl),
             timestamp = System.currentTimeMillis(),
             location = location
         )
@@ -331,6 +357,7 @@ class EvaluationViewModel : ViewModel() {
             .show()
     }
 //Admin Upload, View and delete
+
 
 
     private fun showToast(context: Context, message: String) {

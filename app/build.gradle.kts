@@ -44,46 +44,48 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    // Core Android Dependencies
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.activity:activity-compose:1.7.2")
 
-    // Firebase dependencies (version-aligned)
+    // Compose Dependencies
+    implementation("androidx.compose.ui:ui:1.5.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
+    implementation("androidx.compose.material3:material3:1.1.0")
+    implementation("androidx.compose.material:material:1.5.0")
+
+    // Compose Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.4")
+
+    // Image Loading
+    implementation("io.coil-kt:coil-compose:2.0.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // Firebase Dependencies
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-database:20.3.1")
     implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
 
-    // Analytics (if needed)
-    implementation(libs.play.services.analytics.impl)
+    // Analytics Dependency
+    implementation("com.google.firebase:firebase-analytics-ktx:21.2.0")
 
-    // Coil for image loading
-    implementation("io.coil-kt:coil-compose:2.0.0")
-
-    // Navigation Compose
-    implementation("androidx.navigation:navigation-compose:2.8.4")
-
-    // Retrofit & OkHttp for networking
+    // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
-    // Glide for image loading (optional if using Coil)
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-
     // RecyclerView (if used anywhere)
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    // Debugging and Previews
+    debugImplementation("androidx.compose.ui:ui-tooling:1.5.0")
+    debugImplementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.0")
+
+    // Testing Dependencies
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0")
 }

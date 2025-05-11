@@ -97,20 +97,20 @@ fun LoginScreen(navController: NavController) {
             Box(
                 modifier = Modifier.fillMaxWidth()
             ){
-//            Card (modifier = Modifier.padding(10.dp).align(Alignment.CenterStart),
-//                shape = RoundedCornerShape(20.dp),
-//                elevation = CardDefaults.cardElevation(10.dp),
-//                colors = CardDefaults.cardColors(Color(0xFF7B61FF)),) {
-//
-//                IconButton(onClick = { navController.navigate(ROUTE_USER_HOME) }) {
-//                    Icon(
-//                        imageVector = Icons.Default.ArrowBack,
-//                        contentDescription = "Back"
-//                    )
-//                }
-//
-//
-//            }
+            Card (modifier = Modifier.padding(10.dp).align(Alignment.CenterStart),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(10.dp),
+                colors = CardDefaults.cardColors(Color(0xFF7B61FF)),) {
+
+                IconButton(onClick = { navController.navigate(ROUTE_USER_HOME) }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+
+
+            }
                 Card(
                     modifier = Modifier
                         .padding(10.dp)
@@ -128,7 +128,7 @@ fun LoginScreen(navController: NavController) {
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(140.dp))
+            Spacer(modifier = Modifier.height(120.dp))
 
             Text(
                 text = "Sign In",

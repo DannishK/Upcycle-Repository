@@ -3,42 +3,32 @@ package com.example.upcycle.ui.theme.screens.home
 
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.upcycle.R
-import com.example.upcycle.data.EvaluationViewModel
 import com.example.upcycle.models.ProductsModel
 import com.google.firebase.database.*
+import com.example.upcycle.data.initiateSTKPush
 //import com.google.firebase.database.FirebaseDatabase
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.upcycle.navigation.ROUTE_LOGIN
-import com.example.upcycle.navigation.ROUTE_USER_PROFILE
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +44,9 @@ fun ProductDetailsScreen(
     // Mutable states to hold product data
     val product = remember { mutableStateOf(ProductsModel()) }
     val isLoading = remember { mutableStateOf(true) }
+    val iconColor = Color(0xFF2E7D32)
+    val textColor = Color(0xFF1B5E20)
+    val buttonColor = Color(0xFF7B61FF)
 
     // Fetch the product details from the database
     LaunchedEffect(productId) {
@@ -76,111 +69,121 @@ fun ProductDetailsScreen(
         })
     }
 
-
-
-        // UI
-        if (isLoading.value) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(text = product.value.name) },
-                        navigationIcon = {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowBack,
-                                    contentDescription = "Back"
-                                )
-                            }
-                        }
-                    )
-                }
-            ) {
-                Box( modifier = Modifier.fillMaxSize(),
-
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.background),
-                        "No Image",
-                        contentScale = ContentScale.FillBounds,
-                        //modifier = Modifier.padding(innerPadding)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState())
-                            .fillMaxSize()
-                            .align(Alignment.Center),
-
-
-                    ) {
-                        AsyncImage(
-                            model = product.value.imageUrl,
-                            contentDescription = product.value.name,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(300.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            text = "Name: ${product.value.name}",
-                            textAlign = TextAlign.Center,
-                            color = Color.Black,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = "Price: Ksh ${product.value.price}",
-                            textAlign = TextAlign.Center,
-                            color = Color(0xFF388E3C),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = "Category: ${product.value.category}",
-                            textAlign = TextAlign.Center,
-                            color = Color.Black,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = "Location: ${product.value.location}",
-                            textAlign = TextAlign.Center,
-                            color = Color.Black,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Description:",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.Black,
-                            textAlign = TextAlign.Center,
-                        )
-                        Text(
-                            text = product.value.description,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Black,
-                        )
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Button(
-                            onClick = { navController.navigate(ROUTE_LOGIN) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C))
-                        ) {
-                            Text(text = "BUY NOW", color = Color.White)
+    // UI
+    if (isLoading.value) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = product.value.name) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
                         }
                     }
+                )
+            }
+        ) {
+            Box(){
+            Text(
+                text = "UPCYCLE",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 35.sp,
+                color = textColor
+
+            )
+                }
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.background),
+                    contentDescription = "No Image",
+                    contentScale = ContentScale.FillBounds,
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxSize()
+                        .align(Alignment.TopCenter),
+                ) {
+
+                    Spacer(modifier = Modifier.height(120.dp))
+                    AsyncImage(
+                        model = product.value.imageUrl,
+                        contentDescription = product.value.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Name: ${product.value.name}",
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "Price: Ksh ${product.value.price}",
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFF388E3C),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Category: ${product.value.category}",
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Location: ${product.value.location}",
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Description:",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(
+                        text = product.value.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Black,
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Place BuyNowPopupButton here
+                    BuyNowPopupButton(
+                        selectedProduct = product.value,
+                        onStkPush = { phone, amount, accountRef ->
+                            initiateSTKPush(
+                                context = context,
+                                phoneNumber = phone,
+                                amount = amount,
+                                accountRef = accountRef,
+                                accountReference = "",
+                            )
+                        }
+                    )
                 }
             }
         }
-
+    }
 }
-

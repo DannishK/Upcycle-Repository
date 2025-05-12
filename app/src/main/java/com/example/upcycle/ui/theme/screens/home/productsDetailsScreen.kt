@@ -148,12 +148,12 @@ fun ProductDetailsScreen(
                         color = Color.Black,
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    Text(
-                        text = "Location: ${product.value.location}",
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+//                    Text(
+//                        text = "Location: ${product.value.location}",
+//                        textAlign = TextAlign.Center,
+//                        color = Color.Black,
+//                        style = MaterialTheme.typography.bodyLarge
+//                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Description:",

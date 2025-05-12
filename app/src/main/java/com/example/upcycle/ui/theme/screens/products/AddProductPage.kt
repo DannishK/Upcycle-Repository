@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.painterResource
 import com.example.upcycle.navigation.ROUTE_USER_HOME
 
 @Composable
@@ -69,139 +71,153 @@ fun PostProductScreen(navController: NavController) {
     val context = LocalContext.current
     val productViewModel: EvaluationViewModel = viewModel()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
+    val iconColor = Color(0xFF2E7D32)
+    val textColor = Color(0xFF1B5E20)
+    val buttonColor = Color(0xFF7B61FF)
+
+    Box() {
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            "No Image",
+            contentScale = ContentScale.FillBounds,
+            //modifier = Modifier.padding(innerPadding)
+        )
+
+        Column(
             modifier = Modifier
-                .background(Color.Green)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(20.dp),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Post An Evaluated Product",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
-            )
-        }
-
-        Card(
-            shape = CircleShape,
-            modifier = Modifier
-                .padding(10.dp)
-                .size(200.dp)
-        ) {
-            AsyncImage(
-                model = imageUri.value ?: R.drawable.placeholder_image,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
-                    .size(200.dp)
-                    .clickable { launcher.launch("image/*") }
-            )
-        }
 
-        Text(text = "Upload product image")
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Product Name", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter product name") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = price,
-            onValueChange = { price = it },
-            label = { Text("Price (Ksh)", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter product price") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = category,
-            onValueChange = { category = it },
-            label = { Text("Category", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter category") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = location,
-            onValueChange = { location = it },
-            label = { Text("Location", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter pickup/delivery location") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description", fontWeight = FontWeight.Bold) },
-            placeholder = { Text("Enter product details") },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 150.dp, max = 300.dp)
-                .verticalScroll(scrollState),
-            singleLine = false,
-            textStyle = TextStyle(color = Color.Black)
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                modifier = Modifier.padding(10.dp),
-                onClick = { navController.navigate(ROUTE_USER_HOME) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Text("Dashboard", color = Color.White)
+                Text(
+                    text = "Post An Evaluated Product",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.SansSerif,
+                    color = textColor
+
+                )
             }
 
-            Button(
-                modifier = Modifier.padding(10.dp),
-                onClick = {
-                    imageUri.value?.let {
-                        productViewModel.AdminUploadProductWithImage(
-
-                            uri = it,
-                            context = context,
-                            name = name,
-                            price = price,
-                            category = category,
-                            location = location,
-                            description = description,
-                            navController = navController
-                        )
-                    } ?: Toast.makeText(context, "Pick an Image", Toast.LENGTH_LONG).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+            Card(
+                shape = CircleShape,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .size(200.dp)
             ) {
-                Text("Add Product", color = Color.White)
+                AsyncImage(
+                    model = imageUri.value ?: R.drawable.placeholder_image,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clickable { launcher.launch("image/*") }
+                )
+            }
+
+            Text(text = "Upload product image")
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Product Name", fontWeight = FontWeight.Bold) },
+                placeholder = { Text("Enter product name") },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(color = textColor)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = price,
+                onValueChange = { price = it },
+                label = { Text("Price (Ksh)", fontWeight = FontWeight.Bold) },
+                placeholder = { Text("Enter product price") },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(color = textColor)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = category,
+                onValueChange = { category = it },
+                label = { Text("Category", fontWeight = FontWeight.Bold) },
+                placeholder = { Text("Enter category") },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = TextStyle(color = textColor)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+//            OutlinedTextField(
+//                value = location,
+//                onValueChange = { location = it },
+//                label = { Text("Location", fontWeight = FontWeight.Bold) },
+//                placeholder = { Text("Enter pickup/delivery location") },
+//                shape = RoundedCornerShape(16.dp),
+//                modifier = Modifier.fillMaxWidth(),
+//                textStyle = TextStyle(color = textColor)
+//            )
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description", fontWeight = FontWeight.Bold) },
+                placeholder = { Text("Enter product details") },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 150.dp, max = 300.dp)
+                    .verticalScroll(scrollState),
+                singleLine = false,
+                textStyle = TextStyle(color = textColor)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    modifier = Modifier.padding(10.dp),
+                    onClick = { navController.navigate(ROUTE_USER_HOME) },
+                    colors = ButtonDefaults.buttonColors(containerColor = iconColor)
+                ) {
+                    Text("Dashboard", color = Color.White)
+                }
+
+                Button(
+                    modifier = Modifier.padding(10.dp),
+                    onClick = {
+                        imageUri.value?.let {
+                            productViewModel.AdminUploadProductWithImage(
+
+                                uri = it,
+                                context = context,
+                                name = name,
+                                price = price,
+                                category = category,
+                                description = description,
+                                navController = navController
+                            )
+                        } ?: Toast.makeText(context, "Pick an Image", Toast.LENGTH_LONG).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                ) {
+                    Text("Add Product", color = Color.White)
+                }
             }
         }
     }

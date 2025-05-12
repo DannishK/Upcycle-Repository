@@ -227,7 +227,6 @@ fun uploadProductWithImage(
         name: String,
         price: String,
         category: String,
-        location: String,
         description: String,
         navController: NavController
     ) {
@@ -259,7 +258,6 @@ fun uploadProductWithImage(
                         category = category,
                         imageUrl = imageUrl,//listOf(imageUrl),
                         timestamp = System.currentTimeMillis(),
-                        location = location
                     )
 
                     adminDatabase.child(productId).setValue(product)
@@ -340,22 +338,29 @@ fun uploadProductWithImage(
     }
 
     fun AdminDeleteProduct(context: Context, productId: String, navController: NavController) {
+        val productDatabase = FirebaseDatabase.getInstance().getReference("productsModel")
+
         AlertDialog.Builder(context)
             .setTitle("Delete Product")
             .setMessage("Are you sure you want to delete this product?")
             .setPositiveButton("Yes") { _, _ ->
-                adminDatabase.child(productId).removeValue().addOnCompleteListener { task ->
+                productDatabase.child(productId).removeValue().addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        showToast(context, "Product deleted")
-                        navController.navigate(ROUTE_ADMIN_HOME)
+                        showToast(context, "Product deleted successfully.")
+                        navController.navigate(ROUTE_ADMIN_HOME) {
+                            popUpTo(ROUTE_ADMIN_HOME) { inclusive = true }
+                        }
                     } else {
-                        showToast(context, "Deletion failed")
+                        showToast(context, "Product deletion failed: ${task.exception?.message}")
                     }
                 }
             }
-            .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
+
 //Admin Upload, View and delete
 
 

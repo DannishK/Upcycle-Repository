@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +33,8 @@ import coil.compose.AsyncImage
 import com.example.upcycle.data.EvaluationViewModel
 import com.example.upcycle.models.ProductsModel
 import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -139,7 +142,7 @@ fun UserProductsViewPage(navController: NavController) {
                     DropdownMenu(
                         expanded = expanded.value,
                         onDismissRequest = { expanded.value = false }
-                    ){
+                    ) {
                         DropdownMenuItem(
                             text = { Text("Submit your Item") },
                             onClick = {
@@ -181,7 +184,7 @@ fun UserProductsViewPage(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor =EmeraldGreen ,
+                    containerColor = EmeraldGreen,
                     navigationIconContentColor = Color.White,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
@@ -203,12 +206,13 @@ fun UserProductsViewPage(navController: NavController) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(), // Make sure the grid takes the full width of the parent
+                    .fillMaxHeight()
+                    .padding(8.dp),
+                  //  .verticalScroll(rememberScrollState()), // Allow vertical scrolling
                 contentPadding = PaddingValues(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), // Center horizontally
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
-            ){
+            ) {
                 items(products) { product ->
                     ProductCard(product, navController)
                 }

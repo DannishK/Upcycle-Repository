@@ -5,8 +5,11 @@ package com.example.upcycle.ui.theme.screens.products
 
 
 import android.annotation.SuppressLint
+import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,12 +46,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.upcycle.R
 import com.example.upcycle.data.authViewModel
 import com.example.upcycle.navigation.ROUTE_ADMIN_PROFILE
+import com.example.upcycle.navigation.ROUTE_POST_PRODUCT
 import com.example.upcycle.navigation.ROUTE_USER_PROFILE
 
 
@@ -74,20 +81,34 @@ fun AdminProductsViewPage(navController: NavController) {
         productList = productList,
         context = context
     )
+    Box() {
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            "No Image",
+            contentScale = ContentScale.FillBounds,
+            //modifier = Modifier.padding(innerPadding)
+        )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text(text = "UPCYCLE",modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
-            navigationIcon = {
-                IconButton(onClick = {}) {
-                    Icon(imageVector = Icons.Filled.Home, contentDescription = "Home")
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "UPCYCLE ADMINS",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
 
-                }
-            },
-            actions = {
-                IconButton(onClick = { navController.navigate(ROUTE_ADMIN_PROFILE) }) {
-                    Icon(imageVector = Icons.Filled.Person, contentDescription = "Account")
-                }
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate(ROUTE_POST_PRODUCT) }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add products")
+
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { navController.navigate(ROUTE_ADMIN_PROFILE) }) {
+                        Icon(imageVector = Icons.Filled.Person, contentDescription = "Account")
+                    }
 //                IconButton(onClick = {}) {
 //                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
 //                }
@@ -96,48 +117,51 @@ fun AdminProductsViewPage(navController: NavController) {
 //
 //                }
 
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color(0xFF328EAD),
-                navigationIconContentColor = Color.White,
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.White
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = iconColor,
+                    navigationIconContentColor = Color.White,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
 
+                )
             )
-        )
-        Text(
-            text = "As an admin make sure you log out",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = textColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
+            Text(
+                text = "As an admin make sure you log out",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = textColor,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(8.dp),
-            contentPadding = PaddingValues(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(products) { product ->
-                ProductCard(product, navController)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.padding(8.dp),
+                contentPadding = PaddingValues(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(products) { product ->
+                    ProductCard(product, navController,)
+                }
             }
         }
     }
 }
-
 @Composable
 fun ProductCard(product: ProductsModel, navController: NavController) {
+    val productRepository = EvaluationViewModel()
+    val context = LocalContext.current
+    val productId = ""
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
             .clickable {
-                navController.navigate("product_details/${product.id}")
+                productRepository.AdminDeleteProduct(context, productId,navController)
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {

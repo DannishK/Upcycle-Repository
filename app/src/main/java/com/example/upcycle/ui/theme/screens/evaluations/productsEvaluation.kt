@@ -49,7 +49,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import com.example.upcycle.models.ProductsModel
 import com.example.upcycle.navigation.ROUTE_USER_HOME
 import com.example.upcycle.ui.theme.screens.home.AuthGuard
@@ -81,6 +84,18 @@ fun AddProductScreen(navController: NavController) {
         val iconColor = Color(0xFF2E7D32)
         val textColor = Color(0xFF1B5E20)
         val buttonColor = Color(0xFF7B61FF)
+        val locations = listOf(
+            "Central Business District (CBD)",
+            "Westlands",
+            "Adams Arcade / Dagoretti Corner",
+            " Lang'ata",
+            "Githurai",
+            "Roysambu",
+            "Donholm",
+            "Kawangware",
+            "Kikuyu",
+            "Uthiru"
+        )
 
 
         Box() {
@@ -109,8 +124,11 @@ fun AddProductScreen(navController: NavController) {
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif,
-                        color = textColor
-                    )
+                        color = textColor,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+
+                        )
                 }
 
                 // Image Upload Section
@@ -136,12 +154,12 @@ fun AddProductScreen(navController: NavController) {
                 CustomTextField(value = name, label = "Product Name") { name = it }
                 CustomTextField(value = price, label = "Price (Ksh)") { price = it }
                 CustomTextField(value = category, label = "Category") { category = it }
-                CustomTextField(value = location, label = "Location") { location = it }
-                CustomTextField(
-                    value = description,
-                    label = "Description",
-                    isMultiline = true
-                ) { description = it }
+                LocationDropdown(
+                    selectedLocation = location,
+                    onLocationSelected = { location = it },
+                    locations = locations
+                )
+                CustomTextField(value = description, label = "Description", isMultiline = true) { description = it }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -190,6 +208,7 @@ fun AddProductScreen(navController: NavController) {
     }
 }
 
+
 @Composable
 fun CustomTextField(value: String, label: String, isMultiline: Boolean = false, onValueChange: (String) -> Unit) {
     OutlinedTextField(
@@ -206,4 +225,44 @@ fun CustomTextField(value: String, label: String, isMultiline: Boolean = false, 
         singleLine = !isMultiline
     )
 }
+@Composable
+fun LocationDropdown(
+    selectedLocation: String,
+    onLocationSelected: (String) -> Unit,
+    locations: List<String>
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val iconColor = Color(0xFF2E7D32)
+    val textColor = Color(0xFF1B5E20)
+    val buttonColor = Color(0xFF7B61FF)
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // Display the current selection
+        Text(
+            text = if (selectedLocation.isEmpty()) "Select Location" else selectedLocation,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .clickable { expanded = !expanded },
+            color = iconColor
+        )
 
+        // Dropdown menu
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            locations.forEach { location ->
+                DropdownMenuItem(
+                    text = { Text(location) },
+                    onClick = {
+                        onLocationSelected(location)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}

@@ -119,7 +119,8 @@ fun uploadProductWithImage(
                 )
 
                 // Save to the "productsModel" node
-                database.child("productsModel").child(productId).setValue(product)
+                database.child(productId).setValue(product)
+
                     .addOnSuccessListener {
                         showToast(context, "Product saved successfully")
                         navController.navigate(ROUTE_USER_HOME)
@@ -227,9 +228,17 @@ fun uploadProductWithImage(
         name: String,
         price: String,
         category: String,
+        location: String,
         description: String,
         navController: NavController
     ) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            showToast(context, "User not logged in")
+            return
+        }
+
+        val userId = currentUser.uid
         viewModelScope.launch(Dispatchers.IO) {
             val file = getFileFromUri(context, uri)
             if (file == null) {
@@ -239,7 +248,10 @@ fun uploadProductWithImage(
 
             val imagePart = MultipartBody.Part.createFormData(
                 "image", file.name, file.asRequestBody("image/*".toMediaTypeOrNull())
+
+
             )
+
 
             try {
                 val response = getImgurService().uploadImage(
@@ -258,6 +270,8 @@ fun uploadProductWithImage(
                         category = category,
                         imageUrl = imageUrl,//listOf(imageUrl),
                         timestamp = System.currentTimeMillis(),
+                        location = location,
+                        userId = userId // Store the User ID
                     )
 
                     adminDatabase.child(productId).setValue(product)
@@ -284,17 +298,29 @@ fun uploadProductWithImage(
         productList: SnapshotStateList<ProductsModel>,
         context: Context
     ): List<ProductsModel> {
+        // Reference to the 'productsModel' node in Firebase Realtime Database
         val database = FirebaseDatabase.getInstance().getReference("productsModel")
 
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 productList.clear() // Clear the list to avoid duplication
+
+                // Loop through each product node and map to the list
                 for (childSnapshot in snapshot.children) {
                     val fetchedProduct = childSnapshot.getValue(ProductsModel::class.java)
-                    fetchedProduct?.let {
-                        productList.add(it)
+                    if (fetchedProduct != null) {
+                        productList.add(fetchedProduct)
+                        println("Product fetched: $fetchedProduct") // For debugging
+                    } else {
+                        println("Product fetch failed for snapshot: $childSnapshot") // For debugging
                     }
                 }
+
+                if (productList.isNotEmpty()) {
+                    product.value = productList.first()
+                }
+
+                println("Total products fetched: ${productList.size}") // For debugging
             }
 
             override fun onCancelled(error: DatabaseError) {

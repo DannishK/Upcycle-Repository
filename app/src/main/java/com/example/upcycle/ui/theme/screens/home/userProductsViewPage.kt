@@ -150,18 +150,18 @@ fun UserProductsViewPage(navController: NavController) {
                                 navController.navigate(ROUTE_ADD_PRODUCT)
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("Profile") },
-                            onClick = {
-                                expanded.value = false
-                                navController.navigate(ROUTE_USER_PROFILE)
-                            }
-                        )
+//                        DropdownMenuItem(
+//                            text = { Text("Profile") },
+//                            onClick = {
+//                                expanded.value = false
+//                                navController.navigate(ROUTE_USER_PROFILE)
+//                            }
+//                        )
                         DropdownMenuItem(
                             text = { Text("My Vision") },
                             onClick = {
                                 expanded.value = false
-                                navController.navigate("SettingsScreen")
+                                navController.navigate(ROUTE_ADD_PRODUCT)
                             }
                         )
 //                        DropdownMenuItem(

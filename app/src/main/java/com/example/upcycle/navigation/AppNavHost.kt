@@ -12,6 +12,7 @@ import com.example.upcycle.ui.theme.screens.SplashScreen
 import com.example.upcycle.ui.theme.screens.evaluations.AddProductScreen
 import com.example.upcycle.ui.theme.screens.evaluations.ProductsViewPage
 import com.example.upcycle.ui.theme.screens.evaluations.UpdateProductScreen
+import com.example.upcycle.ui.theme.screens.home.MyVisionScreen
 import com.example.upcycle.ui.theme.screens.home.ProductDetailsScreen
 import com.example.upcycle.ui.theme.screens.home.UserProductsViewPage
 import com.example.upcycle.ui.theme.screens.home.UserProfileScreen
@@ -50,6 +51,7 @@ fun AppNavHost(navController: NavHostController= rememberNavController(),startDe
         }
         composable(ROUTE_USER_PROFILE){ UserProfileScreen(navController) }
         composable(ROUTE_ADMIN_PROFILE){ AdminProfileScreen(navController) }
+        composable(ROUTE_MY_VISION){ MyVisionScreen() }
 
 
 

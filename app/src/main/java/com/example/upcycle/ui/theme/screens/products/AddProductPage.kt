@@ -209,8 +209,10 @@ fun PostProductScreen(navController: NavController) {
                                 name = name,
                                 price = price,
                                 category = category,
+                                location = location,
                                 description = description,
                                 navController = navController
+
                             )
                         } ?: Toast.makeText(context, "Pick an Image", Toast.LENGTH_LONG).show()
                     },

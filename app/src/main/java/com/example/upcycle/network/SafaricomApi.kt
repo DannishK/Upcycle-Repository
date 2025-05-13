@@ -20,9 +20,10 @@ interface SafaricomApi {
     ): Response<STKPushResponse>
 }
 interface SafaricomAuthApi {
-    @GET("https://sandbox.safaricom.co.ke/oauth/v1/generate")
+    @GET("oauth/v1/generate")
     suspend fun generateAccessToken(
-        @Header("https://sandbox.safaricom.co.ke/Authorization") authHeader: String,
-        @Query("https://sandbox.safaricom.co.ke/grant_type") grantType: String = "client_credentials"
+        @Header("Authorization") authHeader: String,
+        @Query("grant_type") grantType: String = "client_credentials"
     ): Response<AccessTokenResponse>
 }
+

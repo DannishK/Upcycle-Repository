@@ -45,6 +45,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -68,25 +69,24 @@ fun AdminProductsViewPage(navController: NavController) {
     val productRepository = EvaluationViewModel()
     val selectedProduct = remember { mutableStateOf(ProductsModel()) }
     val productList = remember { mutableStateListOf<ProductsModel>() }
-    val backgroundGradient = Brush.verticalGradient(
-        colors = listOf(Color(0xFFE8F5E9), Color(0xFFDCEDC8))
-    )
+
+    // Call the function to fetch products (it will auto-update the list)
+    LaunchedEffect(Unit) {
+        productRepository.AdminViewProducts(
+            product = selectedProduct,
+            productList = productList,
+            context = context
+        )
+    }
+
     val iconColor = Color(0xFF2E7D32)
     val textColor = Color(0xFF1B5E20)
-    val buttonColor = Color(0xFF7B61FF)
 
-    // Fetch products
-    val products = productRepository.AdminViewProducts(
-        product = selectedProduct,
-        productList = productList,
-        context = context
-    )
-    Box() {
+    Box {
         Image(
             painter = painterResource(id = R.drawable.background),
-            "No Image",
-            contentScale = ContentScale.FillBounds,
-            //modifier = Modifier.padding(innerPadding)
+            contentDescription = "No Image",
+            contentScale = ContentScale.FillBounds
         )
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -95,37 +95,27 @@ fun AdminProductsViewPage(navController: NavController) {
                     Text(
                         text = "UPCYCLE ADMINS",
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-
+                        textAlign = TextAlign.Center
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(ROUTE_POST_PRODUCT) }) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "Add products")
-
                     }
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(ROUTE_ADMIN_PROFILE) }) {
                         Icon(imageVector = Icons.Filled.Person, contentDescription = "Account")
                     }
-//                IconButton(onClick = {}) {
-//                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
-//                }
-//                IconButton(onClick = { authViewModel.logout() }) {
-//                    Icon(imageVector = Icons.Filled.Close, contentDescription = "Logout")
-//
-//                }
-
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = iconColor,
                     navigationIconContentColor = Color.White,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
-
                 )
             )
+
             Text(
                 text = "As an admin make sure you log out",
                 fontSize = 24.sp,
@@ -144,37 +134,37 @@ fun AdminProductsViewPage(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(products) { product ->
-                    ProductCard(product, navController,)
+                items(productList) { product ->
+                    ProductCard(product, navController)
                 }
             }
         }
     }
 }
+
 @Composable
 fun ProductCard(product: ProductsModel, navController: NavController) {
     val productRepository = EvaluationViewModel()
     val context = LocalContext.current
-    val productId = ""
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
             .clickable {
-                productRepository.AdminDeleteProduct(context, productId,navController)
+                productRepository.AdminDeleteProduct(context, product.id, navController)
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
             AsyncImage(
-                model = product.imageUrl.firstOrNull(),
+                model = product.imageUrl,  // Fixed this line
                 contentDescription = product.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(140.dp)
             )
-
             Column(modifier = Modifier.padding(8.dp)) {
                 Text(text = product.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(text = "Ksh ${product.price}", color = Color(0xFF388E3C), fontWeight = FontWeight.Bold)

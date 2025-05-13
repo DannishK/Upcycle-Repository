@@ -177,8 +177,8 @@ fun ProductDetailsScreen(
                                 context = context,
                                 phoneNumber = phone,
                                 amount = amount,
-                                accountRef = accountRef,
-                                accountReference = "",
+                                //accountRef = accountRef,
+                                accountReference = "UPCYCLE",
                             )
                         }
                     )
